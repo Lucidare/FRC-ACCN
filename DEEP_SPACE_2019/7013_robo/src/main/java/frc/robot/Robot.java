@@ -118,15 +118,59 @@ public class Robot extends IterativeRobot {
     // rearRightDrive.setInverted(true);
     // frontRightDrive.setInverted(true);
     // INITIALIZE USB CAMERA
-    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-    camera.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
+    new Thread(() -> {
+                UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture();
+                camera1.setResolution(640, 480);
+                
+                CvSink cvSink = CameraServer.getInstance().getVideo();
+                CvSource outputStream = CameraServer.getInstance().putVideo("A", 640, 480);
+                
+                Mat source = new Mat();
+                Mat output = new Mat();
+                
+                while(!Thread.interrupted()) {
+                    cvSink.grabFrame(source);
+                    Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+                    outputStream.putFrame(output);
+                }
+            }).start();
+            
+    new Thread(() -> {
+      UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
+      camera2.setResolution(640, 480);
+      
+      CvSink cvSink2 = CameraServer.getInstance().getVideo();
+      CvSource outputStream2 = CameraServer.getInstance().putVideo("B", 640, 480);
+      
+      Mat source2 = new Mat();
+      Mat output2 = new Mat();
+      
+      while(!Thread.interrupted()) {
+          cvSink2.grabFrame(source2);
+          Imgproc.cvtColor(source2, output2, Imgproc.COLOR_BGR2GRAY);
+          outputStream2.putFrame(output2);
+      }
+  }).start();
+        		// UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
+            // camera1.setResolution(320, 240);
+            // camera1.setFPS(30);
+            // UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture(1);
+            // camera2.setResolution(320, 240);
+            // camera2.setFPS(30);
+            
+            // CvSink cvSink1 = CameraServer.getInstance().getVideo(camera1);
+            // CvSink cvSink2 = CameraServer.getInstance().getVideo(camera2);
+            
+            // outputStream1 = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
+            // outputStream2 = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
+            
+    // UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    // camera.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
 
-    UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-    camera2.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
+    // UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
+    // camera2.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
 
-    CameraServerJNI.setLogger((level, file, line, msg) -> {
-      System.out.println("CS: " + msg);
-    }, 9);
+
     // encoder.reset();
     // prev_val = encoder.get();
 
