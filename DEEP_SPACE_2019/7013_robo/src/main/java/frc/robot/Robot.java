@@ -24,6 +24,11 @@ import edu.wpi.first.wpilibj.CameraServer; // FRC USB Camera Driver
 import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.cscore.CameraServerJNI;
+
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 // import edu.wpi.first.wpilibj.Encoder;
 
 /**
