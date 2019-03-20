@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -29,6 +30,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
+
 // import edu.wpi.first.wpilibj.Encoder;
 
 /**
@@ -60,6 +62,8 @@ public class Robot extends IterativeRobot {
   Spark frontLeftDrive = new Spark(1);
   Spark rearRightDrive = new Spark(2);
   Spark frontRightDrive = new Spark(3);
+
+  Servo flapperMove = new Servo(4);
 
   // Encoder test = new Encoder(2, 2, false, Encoder.EncodingType.k4X);
   // Encoder test = new Encoder(sourceA, sourceB, reverseDirection, encodingType)
@@ -123,39 +127,39 @@ public class Robot extends IterativeRobot {
     // rearRightDrive.setInverted(true);
     // frontRightDrive.setInverted(true);
     // INITIALIZE USB CAMERA
-    new Thread(() -> {
-                UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture();
-                camera1.setResolution(640, 480);
+  //   new Thread(() -> {
+  //               UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture();
+  //               camera1.setResolution(640, 480);
                 
-                CvSink cvSink = CameraServer.getInstance().getVideo();
-                CvSource outputStream = CameraServer.getInstance().putVideo("A", 640, 480);
+  //               CvSink cvSink = CameraServer.getInstance().getVideo();
+  //               CvSource outputStream = CameraServer.getInstance().putVideo("A", 640, 480);
                 
-                Mat source = new Mat();
-                Mat output = new Mat();
+  //               Mat source = new Mat();
+  //               Mat output = new Mat();
                 
-                while(!Thread.interrupted()) {
-                    cvSink.grabFrame(source);
-                    Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-                    outputStream.putFrame(output);
-                }
-            }).start();
+  //               while(!Thread.interrupted()) {
+  //                   cvSink.grabFrame(source);
+  //                   Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+  //                   outputStream.putFrame(output);
+  //               }
+  //           }).start();
             
-    new Thread(() -> {
-      UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-      camera2.setResolution(640, 480);
+  //   new Thread(() -> {
+  //     UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
+  //     camera2.setResolution(640, 480);
       
-      CvSink cvSink2 = CameraServer.getInstance().getVideo();
-      CvSource outputStream2 = CameraServer.getInstance().putVideo("B", 640, 480);
+  //     CvSink cvSink2 = CameraServer.getInstance().getVideo();
+  //     CvSource outputStream2 = CameraServer.getInstance().putVideo("B", 640, 480);
       
-      Mat source2 = new Mat();
-      Mat output2 = new Mat();
+  //     Mat source2 = new Mat();
+  //     Mat output2 = new Mat();
       
-      while(!Thread.interrupted()) {
-          cvSink2.grabFrame(source2);
-          Imgproc.cvtColor(source2, output2, Imgproc.COLOR_BGR2GRAY);
-          outputStream2.putFrame(output2);
-      }
-  }).start();
+  //     while(!Thread.interrupted()) {
+  //         cvSink2.grabFrame(source2);
+  //         Imgproc.cvtColor(source2, output2, Imgproc.COLOR_BGR2GRAY);
+  //         outputStream2.putFrame(output2);
+  //     }
+  // }).start();
         		// UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(0);
             // camera1.setResolution(320, 240);
             // camera1.setFPS(30);
@@ -169,11 +173,11 @@ public class Robot extends IterativeRobot {
             // outputStream1 = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
             // outputStream2 = new CvSource("Blur", PixelFormat.kMJPEG, 640, 480, 30);
             
-    // UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-    // camera.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
+    UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+    camera.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
 
-    // UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
-    // camera2.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
+    UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
+    camera2.setVideoMode(PixelFormat.kYUYV, 640, 360, 30);
 
 
     // encoder.reset();
@@ -241,132 +245,7 @@ public class Robot extends IterativeRobot {
         }
         drive.tankDrive(-0.6, -0.6);
       } else {
-        // Retrieve sample from ultrasound and update it to myRange
-        // Uncomment one to use your prefered unit
-        // myRange = ultrasonicSensor.getRangeInches();
-        // System.out.printf("Range is %f", myRange);
-        // myRange = ultrasonicSensor.getRangeMM();
-
-        // position += encoder.get();
-
-        // System.out.printf("switch 0 bot %b\n", bottomLimitSwitch.get());
-        // System.out.printf("switch 1 top %b\n", topLimitSwitch.get());
-        // System.out.printf("Diff = %d\n", (encoder.get() - prev_val));
-        // prev_val = encoder.get();
-        // System.out.printf("Encoder value %d\n", encoder.get());
-        // System.out.printf("Encoder value \n");
-        // encoder.reset();
-        // System.out.printf("Position %d\n", position);
-
-        // System.out.printf("testing %b\n", test.get());
-        // if (test.get()) {
-        // System.out.printf("1\n");
-        // } else {
-        // System.out.printf("0\n");
-        // }
-
-        // drive.tankDrive((double) driverControl.getRawAxis(1)*(-1.0)*(0.2), (double)
-        // driverControl.getRawAxis(5)*(-1.0)*(0.2));
-        // left_joy = (double) driverControl.getRawAxis(1) * (toggle);
-        // right_joy = (double) driverControl.getRawAxis(3) * (toggle);
-        // if (Math.abs(left_joy) > DEAD_ZONE || Math.abs(right_joy) > DEAD_ZONE) {|
-    left_joy = (double) driverControl.getRawAxis(1);
-    right_joy = (double) driverControl.getRawAxis(3) * (toggle);
-    arcade_turn = (double) driverControl.getRawAxis(2);
-    if (Math.abs(left_joy) > DEAD_ZONE || Math.abs(right_joy) > DEAD_ZONE || Math.abs(arcade_turn) > DEAD_ZONE) {
-          // scales outside of deadzone (DEAD_ZONE - 100%) to 0 - 100%
-          if (left_joy > 0) {
-            left_joy = (left_joy - DEAD_ZONE) / (1 - DEAD_ZONE);
-          } else {
-            left_joy = (left_joy + DEAD_ZONE) / (1 - DEAD_ZONE);
-          }
-          if (right_joy > 0) {
-            right_joy = (right_joy - DEAD_ZONE) / (1 - DEAD_ZONE);
-          } else {
-            right_joy = (right_joy + DEAD_ZONE) / (1 - DEAD_ZONE);
-          }
-
-          left_joy *= SPEED_SCALING;
-          right_joy *= SPEED_SCALING;
-          // arcade_turn *= SPEED_SCALING;
-
-          // if (toggle == -1.0) {
-          //   drive.tankDrive(left_joy, right_joy);
-          // } else {
-          //   drive.tankDrive(right_joy, left_joy);
-          // }
-          
-      if (toggle == -1.0) {
-        rearLeftDrive.set(-left_joy + arcade_turn);
-        frontLeftDrive.set(-left_joy + arcade_turn);
-        rearRightDrive.set(left_joy + arcade_turn);
-        frontRightDrive.set(left_joy + arcade_turn);
-      } else {
-        rearLeftDrive.set(left_joy + arcade_turn);
-        frontLeftDrive.set(left_joy + arcade_turn);
-        rearRightDrive.set(-left_joy + arcade_turn);
-        frontRightDrive.set(-left_joy + arcade_turn);
-      }
-
-        } else {
-          drive.tankDrive(0, 0);
-        }
-
-        // raw axis was previously 1 and 5, but controller settings to logitech dual
-        // action got swaped so it's 1 and 3 now?
-        // buttons got swapped too was 4 and 1 now 4 and 2
-        if (driverControl2.getRawButton(4) && topLimitSwitch.get()) {
-          winch.set(ControlMode.PercentOutput, 0.5);
-          System.out.printf("winch1\n");
-        } else if (driverControl2.getRawButton(2) && bottomLimitSwitch.get()) {
-          System.out.printf("winch2\n");
-          winch.set(ControlMode.PercentOutput, -0.5);
-        } else {
-          winch.set(ControlMode.PercentOutput, 0);
-        }
-
-        if (driverControl2.getRawButton(5)) {
-          intake.set(ControlMode.PercentOutput, 1);
-          System.out.printf("intake\n");
-        } else if (driverControl2.getRawButton(6)) {
-          System.out.printf("outtake\n");
-          intake.set(ControlMode.PercentOutput, -1);
-        } else {
-          intake.set(ControlMode.PercentOutput, 0);
-        }
-
-        if (driverControl2.getRawButton(7)) {
-          flapper.set(ControlMode.PercentOutput, 0.6);
-        } else if (driverControl2.getRawButton(8)) {
-          flapper.set(ControlMode.PercentOutput, -0.6);
-        } else {
-          flapper.set(ControlMode.PercentOutput, 0);
-        }
-
-        if (driverControl2.getRawButton(3) && (time_locked == 0)) {
-          start_time = timer.get();
-          time_locked = -1;
-          // System.out.printf("flapper on\n");
-        } else if (driverControl2.getRawButton(1) && (time_locked == 0)) {
-          start_time = timer.get();
-          time_locked = 1;
-          // System.out.printf("flapper off\n");
-          // flapper.set(ControlMode.PercentOutput, -1);
-        }
-
-        if ((time_locked != 0) && (timer.get() < start_time + 0.4)) {
-          flapper.set(ControlMode.PercentOutput, time_locked);
-        } else {
-          time_locked = 0;
-        }
-
-        // System.out.printf("time %f\n",timer.get());
-
-        // 10 = start button, toggle direction
-        if (driverControl.getRawButtonReleased(10)) {
-          toggle *= -1;
-          System.out.printf("toggled %f\n", toggle);
-        }
+        teleopPeriodic();
       }
       break;
     }
@@ -383,6 +262,8 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
+    // Linear Actuator
+    
     // Retrieve sample from ultrasound and update it to myRange
     // Uncomment one to use your prefered unit
     // myRange = ultrasonicSensor.getRangeInches();
@@ -412,41 +293,50 @@ public class Robot extends IterativeRobot {
     // left_joy = (double) driverControl.getRawAxis(1) * (toggle);
     // right_joy = (double) driverControl.getRawAxis(3) * (toggle);
     // if (Math.abs(left_joy) > DEAD_ZONE || Math.abs(right_joy) > DEAD_ZONE) {
-    left_joy = (double) driverControl.getRawAxis(1);
-    right_joy = (double) driverControl.getRawAxis(3) * (toggle);
-    arcade_turn = (double) driverControl.getRawAxis(2);
-    if (Math.abs(left_joy) > DEAD_ZONE || Math.abs(right_joy) > DEAD_ZONE || Math.abs(arcade_turn) > DEAD_ZONE) {
+    // left_joy = (double) driverControl.getRawAxis(1);
+    left_joy = (double) driverControl.getRawAxis(1) * toggle;
+    // right_joy = (double) driverControl.getRawAxis(3) * (toggle);
+    // arcade_turn = (double) driverControl.getRawAxis(2);
+    arcade_turn = (double) driverControl.getRawAxis(2)*-1;
+    if (Math.abs(left_joy) > DEAD_ZONE || Math.abs(arcade_turn) > DEAD_ZONE) {
+    // if (Math.abs(left_joy) > DEAD_ZONE || Math.abs(right_joy) > DEAD_ZONE || Math.abs(arcade_turn) > DEAD_ZONE) {
       // scales outside of deadzone (DEAD_ZONE - 100%) to 0 - 100%
-      // if (left_joy > 0) {
-      // left_joy = (left_joy - DEAD_ZONE) / (1 - DEAD_ZONE);
-      // } else {
-      // left_joy = (left_joy + DEAD_ZONE) / (1 - DEAD_ZONE);
-      // }
+      if (left_joy > 0) {
+      left_joy = (left_joy - DEAD_ZONE) / (1 - DEAD_ZONE);
+      } else {
+      left_joy = (left_joy + DEAD_ZONE) / (1 - DEAD_ZONE);
+      }
+      if (arcade_turn > 0) {
+        arcade_turn = (arcade_turn - DEAD_ZONE) / (1 - DEAD_ZONE);
+        } else {
+          arcade_turn = (arcade_turn + DEAD_ZONE) / (1 - DEAD_ZONE);
+        }
       // if (right_joy > 0) {
       // right_joy = (right_joy - DEAD_ZONE) / (1 - DEAD_ZONE);
       // } else {
       // right_joy = (right_joy + DEAD_ZONE) / (1 - DEAD_ZONE);
       // }
-      System.out.printf("%f %f\n", left_joy, right_joy);
+      // System.out.printf("%f %f\n", left_joy, right_joy);
       left_joy *= SPEED_SCALING;
-      right_joy *= SPEED_SCALING;
-
+      // right_joy *= SPEED_SCALING;
+      arcade_turn *= SPEED_SCALING;
       // if (toggle == -1.0) {
       //   drive.tankDrive(left_joy, right_joy);
       // } else {
       //   drive.tankDrive(right_joy, left_joy);
       // }
-      if (toggle == -1.0) {
-        rearLeftDrive.set(-left_joy + arcade_turn);
-        frontLeftDrive.set(-left_joy + arcade_turn);
-        rearRightDrive.set(left_joy + arcade_turn);
-        frontRightDrive.set(left_joy + arcade_turn);
-      } else {
-        rearLeftDrive.set(left_joy + arcade_turn);
-        frontLeftDrive.set(left_joy + arcade_turn);
-        rearRightDrive.set(-left_joy + arcade_turn);
-        frontRightDrive.set(-left_joy + arcade_turn);
-      }
+      drive.arcadeDrive(left_joy, arcade_turn);
+      // if (toggle == -1.0) {
+      //   rearLeftDrive.set(-left_joy + arcade_turn);
+      //   frontLeftDrive.set(-left_joy + arcade_turn);
+      //   rearRightDrive.set(left_joy + arcade_turn);
+      //   frontRightDrive.set(left_joy + arcade_turn);
+      // } else {
+      //   rearLeftDrive.set(left_joy + arcade_turn);
+      //   frontLeftDrive.set(left_joy + arcade_turn);
+      //   rearRightDrive.set(-left_joy + arcade_turn);
+      //   frontRightDrive.set(-left_joy + arcade_turn);
+      // }
 
     } else {
       drive.tankDrive(0, 0);
@@ -516,6 +406,15 @@ public class Robot extends IterativeRobot {
         SPEED_SCALING = 1.0;
       }
       System.out.printf("speed %f\n", SPEED_SCALING);
+    }
+    
+    // 10 = back button, toggle speed
+    if (driverControl2.getRawButton(10)) {
+      flapperMove.set(0.20);
+    // } else if (driverControl2.getRawButton(10)) {
+    //   flapperMov
+    } else {
+      flapperMove.set(0.17);
     }
   }
 
