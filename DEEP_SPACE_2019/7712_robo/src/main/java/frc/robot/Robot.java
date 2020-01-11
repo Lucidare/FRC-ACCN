@@ -237,16 +237,17 @@ public class Robot extends IterativeRobot {
       break;
     case kDefaultAuto:
     default:
-      if (timer.get() < start_auto + 2) {
-        System.out.println("autoing\n");
-        if (first_auto) {
-          start_auto = timer.get();
-          first_auto = false;
-        }
-        drive.tankDrive(-0.6, -0.6);
-      } else {
+      // if (timer.get() < start_auto + 2) {
+      //   System.out.println("autoing\n");
+      //   if (first_auto) {
+      //     start_auto = timer.get();
+      //     first_auto = false;
+      //   }
+      //   drive.tankDrive(-0.6, -0.6);
+      // } else {
+      //   timer.stop();
         teleopPeriodic();
-      }
+      // }
       break;
     }
   }
@@ -345,15 +346,15 @@ public class Robot extends IterativeRobot {
     // raw axis was previously 1 and 5, but controller settings to logitech dual
     // action got swaped so it's 1 and 3 now?
     // buttons got swapped too was 4 and 1 now 4 and 2
-    if (driverControl2.getRawButton(4) && topLimitSwitch.get()) {
-      winch.set(ControlMode.PercentOutput, 0.5);
-      // System.out.printf("winch1\n");
-    } else if (driverControl2.getRawButton(2) && bottomLimitSwitch.get()) {
-      // System.out.printf("winch2\n");
-      winch.set(ControlMode.PercentOutput, -0.5);
-    } else {
-      winch.set(ControlMode.PercentOutput, 0);
-    }
+    // if (driverControl2.getRawButton(4) && topLimitSwitch.get()) {
+    //   winch.set(ControlMode.PercentOutput, 0.5);
+    //   // System.out.printf("winch1\n");
+    // } else if (driverControl2.getRawButton(2) && bottomLimitSwitch.get()) {
+    //   // System.out.printf("winch2\n");
+    //   winch.set(ControlMode.PercentOutput, -0.5);
+    // } else {
+    //   winch.set(ControlMode.PercentOutput, 0);
+    // }
 
     if (driverControl2.getRawButton(5)) {
       intake.set(ControlMode.PercentOutput, 1);
@@ -365,30 +366,30 @@ public class Robot extends IterativeRobot {
       intake.set(ControlMode.PercentOutput, 0);
     }
 
-    if (driverControl2.getRawButton(7)) {
-      flapper.set(ControlMode.PercentOutput, 0.6);
-    } else if (driverControl2.getRawButton(8)) {
-      flapper.set(ControlMode.PercentOutput, -0.6);
-    } else {
-      flapper.set(ControlMode.PercentOutput, 0);
-    }
+    // if (driverControl2.getRawButton(7)) {
+    //   flapper.set(ControlMode.PercentOutput, 0.6);
+    // } else if (driverControl2.getRawButton(8)) {
+    //   flapper.set(ControlMode.PercentOutput, -0.6);
+    // } else {
+    //   flapper.set(ControlMode.PercentOutput, 0);
+    // }
 
-    if (driverControl2.getRawButton(3) && (time_locked == 0)) {
-      start_time = timer.get();
-      time_locked = -1;
-      // System.out.printf("flapper on\n");
-    } else if (driverControl2.getRawButton(1) && (time_locked == 0)) {
-      start_time = timer.get();
-      time_locked = 1;
-      // System.out.printf("flapper off\n");
-      // flapper.set(ControlMode.PercentOutput, -1);
-    }
+    // if (driverControl2.getRawButton(3) && (time_locked == 0)) {
+    //   start_time = timer.get();
+    //   time_locked = -1;
+    //   // System.out.printf("flapper on\n");
+    // } else if (driverControl2.getRawButton(1) && (time_locked == 0)) {
+    //   start_time = timer.get();
+    //   time_locked = 1;
+    //   // System.out.printf("flapper off\n");
+    //   // flapper.set(ControlMode.PercentOutput, -1);
+    // }
 
-    if ((time_locked != 0) && (timer.get() < start_time + 0.4)) {
-      flapper.set(ControlMode.PercentOutput, time_locked);
-    } else {
-      time_locked = 0;
-    }
+    // if ((time_locked != 0) && (timer.get() < start_time + 0.4)) {
+    //   flapper.set(ControlMode.PercentOutput, time_locked);
+    // } else {
+    //   time_locked = 0;
+    // }
 
     // System.out.printf("time %f\n",timer.get());
 
@@ -409,13 +410,13 @@ public class Robot extends IterativeRobot {
     }
     
     // 10 = back button, toggle speed
-    if (driverControl2.getRawButton(10)) {
-      flapperMove.set(0.20);
-    // } else if (driverControl2.getRawButton(10)) {
-    //   flapperMov
-    } else {
-      flapperMove.set(0.17);
-    }
+    // if (driverControl2.getRawButton(10)) {
+    //   flapperMove.set(0.20);
+    // // } else if (driverControl2.getRawButton(10)) {
+    // //   flapperMov
+    // } else {
+    //   flapperMove.set(0.17);
+    // }
   }
 
   /**
