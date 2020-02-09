@@ -12,10 +12,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,9 +42,9 @@ public class Robot extends TimedRobot {
 
   DifferentialDrive nitro = new DifferentialDrive(m_left, m_right);
 
-  Spark m_climber = new Spark(4);
-  Victor m_arm = new Victor(5);
-  Spark m_intake = new Spark (6);
+  VictorSPX m_climber = new VictorSPX(4);
+  VictorSPX m_arm = new VictorSPX(5);
+  VictorSPX m_intake = new VictorSPX (6);
 
   Joystick logitech1 = new Joystick(0);
 
@@ -51,6 +53,9 @@ public class Robot extends TimedRobot {
   DigitalInput topClimbLS = new DigitalInput(2);
   DigitalInput bottomClimbLS = new DigitalInput(3);
   
+  Ultrasonic distance = new Ultrasonic(4,5);
+  
+  double range;
   // RobotDrive drive = new RobotDrive();
 
   /**
@@ -62,6 +67,11 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    
+    //Automatic mode will send ping by itself 4 times every second.
+    System.out.println("ROBOT INIT"); 
+    distance.setAutomaticMode(true); // turns on automatic mode
+    distance.setEnabled(true);
   }
 
   /**
@@ -92,6 +102,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+
+    range = distance.getRangeInches(); // reads the range on the ultrasonic sensor
   }
 
   /**
@@ -101,11 +113,13 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
       case kCustomAuto:
-        // Put custom auto code here
         break;
       case kDefaultAuto:
+        range = distance.getRangeInches();
+        System.out.println("Ultrasound distance: " + range);
       default:
-        // Put default auto code here
+        range = distance.getRangeInches();
+        System.out.println("Ultrasound distance: " + range);
         break;
     }
   }
@@ -119,27 +133,28 @@ public class Robot extends TimedRobot {
     double right_stick = -logitech1.getRawAxis(3);
     nitro.tankDrive(left_stick,right_stick);
 
-    if (logitech1.getRawButton(3) && topClimbLS.get()) {
-      m_climber.set(0.5);
-    } else if (logitech1.getRawButton(1) && bottomClimbLS.get()) {
-      m_climber.set(-0.5);
+    if (logitech1.getRawButton(4) && topClimbLS.get()) {
+      m_climber.set(ControlMode.PercentOutput, 0.5);
+    } else if (logitech1.getRawButton(2) && bottomClimbLS.get()) {
+      m_climber.set(ControlMode.PercentOutput, -0.5);
     } else {
-      m_climber.set(0);
+      m_climber.set(ControlMode.PercentOutput, 0);
     }
 
-    if (logitech1.getRawButton(0) && topArmLS.get()) {
-      m_arm.set(0.5);
-    } else if (logitech1.getRawButton(2) && bottomArmLS.get()) {
-      m_arm.set(-0.5);
+    if (logitech1.getRawButton(1) && topArmLS.get()) {
+      m_arm.set(ControlMode.PercentOutput, 0.5);
+    } else if (logitech1.getRawButton(3) && bottomArmLS.get()) {
+      m_arm.set(ControlMode.PercentOutput, -0.5);
     } else {
-      m_arm.set(0);
+      m_arm.set(ControlMode.PercentOutput, 0);
+      // m_arm.set(0);
     }
-    if (logitech1.getRawButton(5)) { 
-      m_intake.set(0.5);
-    } else if (logitech1.getRawButton(4)) {
-      m_intake.set(-0.5);
+    if (logitech1.getRawButton(6)) { 
+      m_intake.set(ControlMode.PercentOutput, 0.5);
+    } else if (logitech1.getRawButton(5)) {
+      m_intake.set(ControlMode.PercentOutput, -0.5);
     } else {
-      m_intake.set(0);
+      m_intake.set(ControlMode.PercentOutput, 0);
     }
   }
 
@@ -148,5 +163,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+
   }
 }
