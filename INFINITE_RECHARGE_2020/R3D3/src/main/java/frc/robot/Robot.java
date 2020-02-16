@@ -117,9 +117,20 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
         range = distance.getRangeInches();
         System.out.println("Ultrasound distance: " + range);
+        double speed = 0;
+        if (range > 42) {
+          speed = range/120;
+          speed = 0.6;
+          if (speed < .5) {
+            speed = .5;
+          } 
+        } else {
+          speed = 0;
+        }
+       // nitro.tankDrive(speed, speed);
       default:
-        range = distance.getRangeInches();
-        System.out.println("Ultrasound distance: " + range);
+        // range = distance.getRangeInches();
+        // System.out.println("Ultrasound distance: " + range);
         break;
     }
   }
