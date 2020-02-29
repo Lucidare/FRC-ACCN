@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -29,6 +30,8 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
+  private static final String kLeftAuto = "Left Auto";
+  private static final String kRightAuto = "Right Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -43,8 +46,8 @@ public class Robot extends TimedRobot {
   DifferentialDrive nitro = new DifferentialDrive(m_left, m_right);
 
   VictorSPX m_climber = new VictorSPX(4);
-  VictorSPX m_arm = new VictorSPX(5);
-  VictorSPX m_intake = new VictorSPX (6);
+  VictorSPX m_intake = new VictorSPX(5);
+  VictorSPX m_arm = new VictorSPX (6);
 
   Joystick logitech1 = new Joystick(0);
 
@@ -56,7 +59,11 @@ public class Robot extends TimedRobot {
   Ultrasonic distance = new Ultrasonic(4,5);
   
   double range;
+  int turnStep = 0;
+  double speedScale = 1.0;
   // RobotDrive drive = new RobotDrive();
+  Timer test = new Timer();
+  int timer;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -65,13 +72,14 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("Center Auto", kCustomAuto);
+    m_chooser.addOption("Left Auto", kLeftAuto);
+    m_chooser.addOption("Right Auto", kRightAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     
     //Automatic mode will send ping by itself 4 times every second.
-    System.out.println("ROBOT INIT"); 
     distance.setAutomaticMode(true); // turns on automatic mode
-    distance.setEnabled(true);
+    distance.setEnabled(true); 
   }
 
   /**
@@ -84,6 +92,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    System.out.println(m_chooser.getSelected()); 
   }
 
   /**
@@ -103,6 +112,7 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
 
+    timer = 0;
     range = distance.getRangeInches(); // reads the range on the ultrasonic sensor
   }
 
@@ -111,38 +121,146 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    double speed = 0;
     switch (m_autoSelected) {
       case kCustomAuto:
         break;
       case kDefaultAuto:
         range = distance.getRangeInches();
-        System.out.println("Ultrasound distance: " + range);
-        double speed = 0;
-        if (range > 42) {
-          speed = range/120;
-          speed = 0.6;
-          if (speed < .5) {
-            speed = .5;
-          } 
-        } else {
-          speed = 0;
+        speed = 0.55;
+
+       if (range < 20) { 
+         timer += 1;
+       }
+
+       if (timer > 100 && timer < 200) {
+         speed = 0.4;
+         m_arm.set(ControlMode.PercentOutput, -0.2);
+       } else if (timer > 200 && timer < 300) {
+         speed = 0;
+        m_intake.set(ControlMode.PercentOutput, 0.8);
+       } else if (timer > 300) {
+         speed = 0;
+         m_intake.set(ControlMode.PercentOutput, 0);
+       }
+        // left is negative cause its hooked up backwards
+       nitro.tankDrive(-speed, speed);
+       break;
+
+      case kLeftAuto:
+        range = distance.getRangeInches();
+        speed = 0.55;
+        
+        if (range < 60) {
+          turnStep++;
         }
-       // nitro.tankDrive(speed, speed);
+        switch (turnStep) {
+          case 1:
+            if (timer < 20) {
+              nitro.tankDrive(-speed + 0.05, speed);
+            } else if (timer >= 20 && timer < 40) {
+              nitro.tankDrive(-speed, speed + 0.05);
+            } else {
+              turnStep++;
+            }
+            timer += 1;
+            break;
+          case 2:
+            if (timer < 20) {
+              nitro.tankDrive(-speed, speed + 0.05);
+            } else if (timer >= 20 && timer < 40) {
+              nitro.tankDrive(-speed + 0.05, speed);
+            } else {
+              turnStep++;
+              timer = 0;
+            }
+            timer += 1;
+            break;
+        }
+
+        if (range < 20) { 
+          timer += 1;
+        }
+
+        if (timer > 100 && timer < 200) {
+          speed = 0.4;
+          m_arm.set(ControlMode.PercentOutput, -0.2);
+        } else if (timer > 200 && timer < 300) {
+          speed = 0;
+          m_intake.set(ControlMode.PercentOutput, 0.8);
+        } else if (timer > 300) {
+          speed = 0;
+          m_intake.set(ControlMode.PercentOutput, 0);
+        }
+        // left is negative cause its hooked up backwards
+       nitro.tankDrive(-speed, speed);
+       break;
+      case kRightAuto:
+        range = distance.getRangeInches();
+        speed = 0.55;
+        
+        if (range < 60) {
+          turnStep++;
+        }
+        switch (turnStep) {
+          case 1:
+            if (timer < 20) {
+              nitro.tankDrive(-speed, speed + 0.05);
+            } else if (timer >= 20 && timer < 40) {
+              nitro.tankDrive(-speed + 0.05, speed);
+            } else {
+              turnStep++;
+            }
+            timer += 1;
+            break;
+          case 2:
+            if (timer < 20) {
+              nitro.tankDrive(-speed, speed + 0.05);
+            } else if (timer >= 20 && timer < 40) {
+              nitro.tankDrive(-speed + 0.05, speed);
+            } else {
+              turnStep++;
+              timer = 0;
+            }
+            timer += 1;
+            break;
+        }
+
+        if (range < 20) { 
+          timer += 1;
+        }
+
+        if (timer > 100 && timer < 200) {
+          speed = 0.4;
+          m_arm.set(ControlMode.PercentOutput, -0.2);
+        } else if (timer > 200 && timer < 300) {
+          speed = 0;
+          m_intake.set(ControlMode.PercentOutput, 0.8);
+        } else if (timer > 300) {
+          speed = 0;
+          m_intake.set(ControlMode.PercentOutput, 0);
+        }
+        // left is negative cause its hooked up backwards
+        nitro.tankDrive(-speed, speed);
+        break;
       default:
-        // range = distance.getRangeInches();
-        // System.out.println("Ultrasound distance: " + range);
         break;
     }
   }
 
   /**
    * This function is called periodically during operator control.
-   */
+   */ 
   @Override
   public void teleopPeriodic() {
+
     double left_stick = -logitech1.getRawAxis(1);
     double right_stick = -logitech1.getRawAxis(3);
-    nitro.tankDrive(left_stick,right_stick);
+    double arcade_turn = logitech1.getRawAxis(2);
+
+    // change for different drives
+    nitro.arcadeDrive(-arcade_turn*speedScale, -left_stick*speedScale);
+    //nitro.tankDrive(left_stick*-0.7,right_stick*0.7);
 
     if (logitech1.getRawButton(4) && topClimbLS.get()) {
       m_climber.set(ControlMode.PercentOutput, 0.5);
@@ -151,21 +269,29 @@ public class Robot extends TimedRobot {
     } else {
       m_climber.set(ControlMode.PercentOutput, 0);
     }
-
+//a is couter clockwize y is clockwize
     if (logitech1.getRawButton(1) && topArmLS.get()) {
-      m_arm.set(ControlMode.PercentOutput, 0.5);
+      m_intake.set(ControlMode.PercentOutput, 0.96);
     } else if (logitech1.getRawButton(3) && bottomArmLS.get()) {
-      m_arm.set(ControlMode.PercentOutput, -0.5);
+      m_intake.set(ControlMode.PercentOutput, -1);
     } else {
-      m_arm.set(ControlMode.PercentOutput, 0);
+      m_intake.set(ControlMode.PercentOutput, 0);
       // m_arm.set(0);
     }
     if (logitech1.getRawButton(6)) { 
-      m_intake.set(ControlMode.PercentOutput, 0.5);
+      m_arm.set(ControlMode.PercentOutput, 0.6);
     } else if (logitech1.getRawButton(5)) {
-      m_intake.set(ControlMode.PercentOutput, -0.5);
+      m_arm.set(ControlMode.PercentOutput, -0.45);
     } else {
-      m_intake.set(ControlMode.PercentOutput, 0);
+      m_arm.set(ControlMode.PercentOutput, 0);
+    }
+
+    if (logitech1.getRawButtonReleased(10)) {
+      if (speedScale == 1.0) {
+        speedScale = 0.7;
+      } else {
+        speedScale = 1.0;
+      }
     }
   }
 
