@@ -270,16 +270,16 @@ public class Robot extends TimedRobot {
       m_climber.set(ControlMode.PercentOutput, 0);
     }
 //a is couter clockwize y is clockwize
-    if (logitech1.getRawButton(1) && topArmLS.get()) {
+    if (logitech1.getRawButton(7) && topArmLS.get()) {
       m_intake.set(ControlMode.PercentOutput, 0.96);
-    } else if (logitech1.getRawButton(3) && bottomArmLS.get()) {
-      m_intake.set(ControlMode.PercentOutput, -1);
+    } else if (logitech1.getRawButton(8) && bottomArmLS.get()) {
+      m_intake.set(ControlMode.PercentOutput, -.9);
     } else {
       m_intake.set(ControlMode.PercentOutput, 0);
       // m_arm.set(0);
     }
     if (logitech1.getRawButton(6)) { 
-      m_arm.set(ControlMode.PercentOutput, 0.6);
+      m_arm.set(ControlMode.PercentOutput, 0.5);
     } else if (logitech1.getRawButton(5)) {
       m_arm.set(ControlMode.PercentOutput, -0.45);
     } else {
